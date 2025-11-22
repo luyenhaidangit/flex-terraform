@@ -15,18 +15,10 @@ provider "aws" {
 resource "aws_s3_bucket" "tf_state" {
   bucket = "luyenhaidangit-bucket-terraform-state-2211"
 
-  # Bật versioning để có thể rollback state
   versioning {
     enabled = true
   }
 
-  # Block mọi truy cập public
-  block_public_acls   = true
-  block_public_policy = true
-  ignore_public_acls  = true
-  restrict_public_buckets = true
-
-  # Bật server-side encryption AES256
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
@@ -35,7 +27,6 @@ resource "aws_s3_bucket" "tf_state" {
     }
   }
 
-  # Prevent destroy (bảo vệ state)
   lifecycle {
     prevent_destroy = true
   }
@@ -46,6 +37,16 @@ resource "aws_s3_bucket" "tf_state" {
     Owner       = "luyenhaidangit"
     Project     = "flex"
   }
+}
+
+# Block tất cả public access
+resource "aws_s3_bucket_public_access_block" "tf_state_block" {
+  bucket = aws_s3_bucket.tf_state.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 # DynamoDB table để lock Terraform state
