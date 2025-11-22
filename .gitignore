@@ -1,0 +1,34 @@
+# ==== Terraform local files ====
+.terraform/                  # Plugin và provider tải về local
+terraform.tfstate            # File trạng thái hiện tại
+terraform.tfstate.backup     # Backup state
+*.tfplan                     # Output file từ terraform plan
+crash.log
+bootstrap/.terraform
+
+# ==== Biến nhạy cảm (KHÔNG nên commit) ====
+# *.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+
+# ==== Terraform lock file (tuỳ chọn giữ) ====
+.terraform.lock.hcl
+
+# ==== VSCode và IDE ====
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.log
+
+# ==== MacOS/Linux system ====
+*.bak
+*.tmp
+
+terraform.tfstate
+terraform.tfstate.backup
+.terraform
+
+*.pem
+!*.sample.pem
