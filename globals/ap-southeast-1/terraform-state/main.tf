@@ -11,45 +11,49 @@ provider "aws" {
   region = "ap-southeast-1"
 }
 
-# S3 bucket chứa Terraform state
+# 1. Tạo S3 Bucket lưu state
 resource "aws_s3_bucket" "tf_state" {
   bucket = "luyenhaidangit-bucket-terraform-state-2211"
 
-  versioning {
-    enabled = true
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-
-  lifecycle {
-    prevent_destroy = true
-  }
-
   tags = {
-    Name        = "tf_state"
+    Name        = "terraform-state"
     Environment = "global"
     Owner       = "luyenhaidangit"
     Project     = "flex"
   }
 }
 
-# Block tất cả public access
-resource "aws_s3_bucket_public_access_block" "tf_state_block" {
+# 2. Versioning cho rollback state
+resource "aws_s3_bucket_versioning" "tf_state_versioning" {
+  bucket = aws_s3_bucket.tf_state.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+# 3. Block mọi truy cập public
+resource "aws_s3_bucket_public_access_block" "tf_state_public" {
   bucket = aws_s3_bucket.tf_state.id
 
   block_public_acls       = true
-  block_public_policy     = true
   ignore_public_acls      = true
+  block_public_policy     = true
   restrict_public_buckets = true
 }
 
-# DynamoDB table để lock Terraform state
+# 4. Bật Server Side Encryption AES256
+resource "aws_s3_bucket_server_side_encryption_configuration" "tf_state_sse" {
+  bucket = aws_s3_bucket.tf_state.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+# 5. DynamoDB table dùng để lock Terraform state
 resource "aws_dynamodb_table" "tf_locks" {
   name         = "terraform-locks"
   billing_mode = "PAY_PER_REQUEST"
@@ -61,7 +65,7 @@ resource "aws_dynamodb_table" "tf_locks" {
   }
 
   tags = {
-    Name        = "tf_locks"
+    Name        = "terraform-locks"
     Environment = "global"
     Owner       = "luyenhaidangit"
     Project     = "flex"
