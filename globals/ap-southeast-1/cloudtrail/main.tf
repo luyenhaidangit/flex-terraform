@@ -1,18 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-}
-
-provider "aws" {
-  region = "ap-southeast-1"
-}
-
-data "aws_caller_identity" "current" {}
-
 # 1. Log bucket cho CloudTrail
 resource "aws_s3_bucket" "cloudtrail_bucket" {
   bucket = "flex-apse1-cloudtrail-logs"
