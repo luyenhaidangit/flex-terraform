@@ -58,18 +58,29 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "config_sse" {
   }
 }
 
-# 5. Cấu hình AWS Config Recorder
-resource "aws_config_configuration_recorder" "recorder" {
-  name = "flex-apse1-config"
+# 5. Thêm Config role
+resource "aws_iam_role" "config_role" {
+  name = "flex-apse1-config-role"
 
-  role_arn = aws_iam_role.config_role.arn
-  recording_group {
-    all_supported = true
-    include_global_resource_types = true
-  }
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "config.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
 }
 
-# 6. Cấp quyền ghi vào s3 cho Config
+# 6.Thêm iam role cho recorder
+resource "aws_iam_role_policy_attachment" "config_role_policy" {
+  role       = aws_iam_role.config_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWS_ConfigRole"
+}
+
+# 7. Cấp quyền ghi vào s3 cho Config
 resource "aws_s3_bucket_policy" "config_bucket_policy" {
   bucket = aws_s3_bucket.config_bucket.id
 
@@ -103,7 +114,22 @@ resource "aws_s3_bucket_policy" "config_bucket_policy" {
   })
 }
 
-# 7. Delivery channel cho Config
+# 8. Cấu hình AWS Config Recorder
+resource "aws_config_configuration_recorder" "recorder" {
+  name = "flex-apse1-config"
+
+  role_arn = aws_iam_role.config_role.arn
+  recording_group {
+    all_supported = true
+    include_global_resource_types = true
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.config_role_policy
+  ]
+}
+
+# 9. Delivery channel cho Config
 resource "aws_config_delivery_channel" "delivery" {
   name           = "flex-apse1-delivery"
   s3_bucket_name = aws_s3_bucket.config_bucket.id
@@ -112,37 +138,17 @@ resource "aws_config_delivery_channel" "delivery" {
     delivery_frequency = "TwentyFour_Hours"
   }
 
-  depends_on = [aws_config_configuration_recorder.recorder]
-}
-
-# 8. Endable recorder
-resource "aws_config_configuration_recorder_status" "recorder_status" {
-  name     = aws_config_configuration_recorder.recorder.name
-
-  is_enabled = true
   depends_on = [
-    aws_config_delivery_channel.delivery
+    aws_s3_bucket_policy.config_bucket_policy
   ]
 }
 
-# 9. Thêm Config role
-resource "aws_iam_role" "config_role" {
-  name = "flex-apse1-config-role"
+# 10. Endable recorder
+resource "aws_config_configuration_recorder_status" "recorder_status" {
+  name       = aws_config_configuration_recorder.recorder.name
+  is_enabled = true
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Effect = "Allow",
-      Principal = {
-        Service = "config.amazonaws.com"
-      },
-      Action = "sts:AssumeRole"
-    }]
-  })
-}
-
-# 10. Thêm iam role cho recorder
-resource "aws_iam_role_policy_attachment" "config_policy" {
-  role       = aws_iam_role.config_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWS_ConfigRole"
+  depends_on = [
+    aws_config_delivery_channel.delivery
+  ]
 }
