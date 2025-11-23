@@ -1,16 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-}
-
-provider "aws" {
-  region = "ap-southeast-1"
-}
-
 # 1. Tạo s3 lưu  tf state
 resource "aws_s3_bucket" "terraform_state_bucket" {
   bucket = "flex-apse1-terraform-state"
