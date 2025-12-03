@@ -31,69 +31,45 @@ resource "aws_internet_gateway" "igw" {
 ########################################
 
 resource "aws_subnet" "public" {
-  for_each = {
-    for idx, az in var.azs :
-    idx => {
-      az   = az
-      cidr = var.public_subnet_cidrs[idx]
-    }
-  }
-
   vpc_id                  = aws_vpc.this.id
-  cidr_block              = each.value.cidr
-  availability_zone       = each.value.az
+  cidr_block              = var.public_subnet_cidr
+  availability_zone       = var.az
   map_public_ip_on_launch = true
 
   tags = merge(
     var.tags,
     {
-      Name = "${var.name}-public-${each.value.az}"
+      Name = "${var.name}-public-${var.az}"
       Tier = "public"
     }
   )
 }
 
 resource "aws_subnet" "private" {
-  for_each = {
-    for idx, az in var.azs :
-    idx => {
-      az   = az
-      cidr = var.private_subnet_cidrs[idx]
-    }
-  }
-
-  vpc_id            = aws_vpc.this.id
-  cidr_block        = each.value.cidr
-  availability_zone = each.value.az
+  vpc_id                  = aws_vpc.this.id
+  cidr_block              = var.private_subnet_cidr
+  availability_zone       = var.az
   map_public_ip_on_launch = false
 
   tags = merge(
     var.tags,
     {
-      Name = "${var.name}-private-${each.value.az}"
+      Name = "${var.name}-private-${var.az}"
       Tier = "app"
     }
   )
 }
 
 resource "aws_subnet" "db" {
-  for_each = {
-    for idx, az in var.azs :
-    idx => {
-      az   = az
-      cidr = var.db_subnet_cidrs[idx]
-    }
-  }
-
-  vpc_id            = aws_vpc.this.id
-  cidr_block        = each.value.cidr
-  availability_zone = each.value.az
+  vpc_id                  = aws_vpc.this.id
+  cidr_block              = var.db_subnet_cidr
+  availability_zone       = var.az
   map_public_ip_on_launch = false
 
   tags = merge(
     var.tags,
     {
-      Name = "${var.name}-db-${each.value.az}"
+      Name = "${var.name}-db-${var.az}"
       Tier = "db"
     }
   )
@@ -104,25 +80,23 @@ resource "aws_subnet" "db" {
 ########################################
 
 resource "aws_eip" "nat_eip" {
-  for_each = aws_subnet.public
-
   domain = "vpc"
 
   tags = merge(
     var.tags,
-    { Name = "${var.name}-nat-eip-${each.value.availability_zone}" }
+    { Name = "${var.name}-nat-eip-${var.az}" }
   )
 }
 
 resource "aws_nat_gateway" "nat" {
   for_each = aws_subnet.public
 
-  allocation_id = aws_eip.nat_eip[each.key].id
-  subnet_id     = each.value.id
+  allocation_id = aws_eip.nat_eip.id
+  subnet_id     = aws_subnet.public.id
 
   tags = merge(
     var.tags,
-    { Name = "${var.name}-nat-${each.key}" }
+    { Name = "${var.name}-nat" }
   )
 }
 
@@ -149,37 +123,31 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route_table_association" "public_assoc" {
-  for_each = aws_subnet.public
-
   route_table_id = aws_route_table.public.id
-  subnet_id      = each.value.id
+  subnet_id      = aws_subnet.public.id
 }
 
 # Private RT → NAT per AZ
 resource "aws_route_table" "private" {
-  for_each = aws_subnet.private
-
   vpc_id = aws_vpc.this.id
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat[each.key].id
+    nat_gateway_id = aws_nat_gateway.nat.id
   }
 
   tags = merge(
     var.tags,
     {
-      Name = "${var.name}-private-rt-${each.key}"
+      Name = "${var.name}-private-rt"
       Tier = "private"
     }
   )
 }
 
 resource "aws_route_table_association" "private_assoc" {
-  for_each = aws_subnet.private
-
-  route_table_id = aws_route_table.private[each.key].id
-  subnet_id      = each.value.id
+  route_table_id = aws_route_table.private.id
+  subnet_id      = aws_subnet.private.id
 }
 
 # DB subnet – isolated (không ra Internet)
@@ -196,10 +164,8 @@ resource "aws_route_table" "db" {
 }
 
 resource "aws_route_table_association" "db_assoc" {
-  for_each = aws_subnet.db
-
   route_table_id = aws_route_table.db.id
-  subnet_id      = each.value.id
+  subnet_id      = aws_subnet.db.id
 }
 
 ########################################
@@ -214,10 +180,11 @@ resource "aws_vpc_endpoint" "s3" {
   vpc_endpoint_type = "Gateway"
   service_name      = "com.amazonaws.${data.aws_region.current.name}.s3"
 
-  route_table_ids = concat(
-    [for rt in aws_route_table.private : rt.id],
-    [aws_route_table.db.id]
-  )
+  # private + db
+  route_table_ids = [
+    aws_route_table.private.id,
+    aws_route_table.db.id
+  ]
 
   tags = merge(var.tags, { Name = "${var.name}-s3-endpoint" })
 }
@@ -227,7 +194,7 @@ resource "aws_vpc_endpoint" "dynamodb" {
   vpc_endpoint_type = "Gateway"
   service_name      = "com.amazonaws.${data.aws_region.current.name}.dynamodb"
 
-  route_table_ids = [for rt in aws_route_table.private : rt.id]
+  route_table_ids = [aws_route_table.private.id]
 
   tags = merge(var.tags, { Name = "${var.name}-dynamodb-endpoint" })
 }
@@ -269,7 +236,7 @@ resource "aws_vpc_endpoint" "interface" {
   vpc_id              = aws_vpc.this.id
   vpc_endpoint_type   = "Interface"
   service_name        = "com.amazonaws.${data.aws_region.current.name}.${each.key}"
-  subnet_ids          = [for s in aws_subnet.private : s.id]
+  subnet_ids          = [aws_subnet.private.id]
   private_dns_enabled = true
 
   security_group_ids = [aws_security_group.vpce.id]
