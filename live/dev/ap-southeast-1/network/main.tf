@@ -3,15 +3,16 @@ module "network" {
 
   name                 = "dev-main"
   vpc_cidr             = "10.10.0.0/16"
-  azs                  = ["ap-southeast-1a", "ap-southeast-1b"]
+  az                   = "ap-southeast-1a"
 
-  public_subnet_cidrs  = ["10.10.1.0/24", "10.10.2.0/24"]
-  private_subnet_cidrs = ["10.10.11.0/24", "10.10.12.0/24"]
-  db_subnet_cidrs      = ["10.10.21.0/24", "10.10.22.0/24"]
+  public_subnet_cidr  = "10.0.1.0/24"
+  private_subnet_cidr = "10.0.11.0/24"
+  db_subnet_cidr      = "10.0.21.0/24"
 
   tags = {
+    Name        = "network"
     Environment = "dev"
-    ManagedBy   = "Terraform"
-    Project     = "aws-foundation"
+    Owner       = "luyenhaidangit"
+    Project     = "flex"
   }
 }
