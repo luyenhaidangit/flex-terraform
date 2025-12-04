@@ -9,23 +9,27 @@ variable "vpc_cidr" {
 }
 
 variable "az" {
-  type = string
-  description = "List of Availability Zones"
+  type        = string
+  description = "Availability Zone to deploy subnets in"
 }
 
 variable "public_subnet_cidr" {
   type        = string
+  description = "CIDR block for public subnet"
 }
 
 variable "private_subnet_cidr" {
   type        = string
+  description = "CIDR block for private subnet"
 }
 
 variable "db_subnet_cidr" {
   type        = string
+  description = "CIDR block for database subnet"
 }
 
 variable "tags" {
   type        = map(string)
   default     = {}
+  description = "Tags to apply to resources"
 }
