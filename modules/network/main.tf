@@ -262,6 +262,7 @@ resource "aws_vpc_endpoint" "interface" {
 */
 
 # CloudWatch logs
+/*
 resource "aws_cloudwatch_log_group" "vpc_flow" {
   name              = "/aws/vpc/${var.name}-flow-logs"
   retention_in_days = 30
@@ -273,3 +274,4 @@ resource "aws_flow_log" "vpc_flow" {
   traffic_type         = "ALL"
   vpc_id               = aws_vpc.this.id
 }
+*/
