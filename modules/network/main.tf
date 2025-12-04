@@ -79,6 +79,7 @@ resource "aws_subnet" "db" {
 # 4. NAT Gateway (1 per AZ — best practice)
 ########################################
 
+/*
 resource "aws_eip" "nat_eip" {
   domain = "vpc"
 
@@ -87,7 +88,9 @@ resource "aws_eip" "nat_eip" {
     { Name = "${var.name}-nat-eip-${var.az}" }
   )
 }
+*/
 
+/*
 resource "aws_nat_gateway" "nat" {
   for_each = aws_subnet.public
 
@@ -99,6 +102,7 @@ resource "aws_nat_gateway" "nat" {
     { Name = "${var.name}-nat" }
   )
 }
+*/
 
 ########################################
 # 5. Route Tables
@@ -131,10 +135,12 @@ resource "aws_route_table_association" "public_assoc" {
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.this.id
 
+  /*
   route {
     cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.nat.id
   }
+  */
 
   tags = merge(
     var.tags,
@@ -175,6 +181,7 @@ resource "aws_route_table_association" "db_assoc" {
 data "aws_region" "current" {}
 
 # Gateway endpoint: S3, DynamoDB
+/*
 resource "aws_vpc_endpoint" "s3" {
   vpc_id            = aws_vpc.this.id
   vpc_endpoint_type = "Gateway"
@@ -188,7 +195,9 @@ resource "aws_vpc_endpoint" "s3" {
 
   tags = merge(var.tags, { Name = "${var.name}-s3-endpoint" })
 }
+*/
 
+/*
 resource "aws_vpc_endpoint" "dynamodb" {
   vpc_id            = aws_vpc.this.id
   vpc_endpoint_type = "Gateway"
@@ -198,8 +207,10 @@ resource "aws_vpc_endpoint" "dynamodb" {
 
   tags = merge(var.tags, { Name = "${var.name}-dynamodb-endpoint" })
 }
+*/
 
 # Interface endpoints: ECR API, ECR DKR, CloudWatch Logs
+/*
 locals {
   interface_endpoints = [
     "ecr.api",
@@ -207,8 +218,10 @@ locals {
     "logs"
   ]
 }
+*/
 
 # Interface endpoints: ECR API, ECR DKR, CloudWatch Logs
+/*
 resource "aws_security_group" "vpce" {
   name        = "${var.name}-vpce-sg"
   description = "Security group for VPC Interface Endpoints"
@@ -246,6 +259,7 @@ resource "aws_vpc_endpoint" "interface" {
     { Name = "${var.name}-${each.key}-endpoint" }
   )
 }
+*/
 
 # CloudWatch logs
 resource "aws_cloudwatch_log_group" "vpc_flow" {
