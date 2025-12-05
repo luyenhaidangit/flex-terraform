@@ -14,19 +14,7 @@ variable "alb_ingress_cidrs" {
   default     = ["0.0.0.0/0"]
 }
 
-# App inbound allowed SG (only ALB should call App)
-variable "app_ingress_sg_ids" {
-  type        = list(string)
-  default     = []
-}
-
-# DB inbound allowed SG (only App should call DB)
-variable "db_ingress_sg_ids" {
-  type        = list(string)
-  default     = []
-}
-
-# Extra dynamic rules
+# Extra dynamic rules for App SG
 variable "extra_rules" {
   type = list(object({
     name        = string
