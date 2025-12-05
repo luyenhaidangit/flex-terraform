@@ -1,5 +1,5 @@
 module "sg" {
-  source = "../../../../modules/security"
+  source = "../../../../modules/security-groups"
 
   name   = "flex"
   vpc_id = module.vpc.vpc_id
