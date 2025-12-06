@@ -25,3 +25,17 @@ variable "extra_rules" {
   }))
   default = []
 }
+
+# VPC CIDR for SSM VPC Endpoints
+variable "vpc_cidr" {
+  description = "VPC CIDR block for SSM endpoints ingress"
+  type        = string
+  default     = null
+}
+
+# Enable SSM VPC Endpoints SG
+variable "enable_ssm_endpoints" {
+  description = "Create Security Group for SSM VPC Endpoints"
+  type        = bool
+  default     = false
+}
