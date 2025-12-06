@@ -75,22 +75,6 @@ resource "aws_security_group" "ssm_vpce" {
   description = "Security Group for SSM VPC Interface Endpoints"
   vpc_id      = var.vpc_id
 
-  ingress {
-    description = "HTTPS from VPC"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
-  }
-
-  egress {
-    description = "All outbound"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   tags = {
     Name = "${var.name}-vpce-sg"
   }
@@ -171,4 +155,31 @@ resource "aws_security_group_rule" "extra" {
   protocol          = each.value.protocol
   cidr_blocks       = each.value.cidr_blocks
   security_group_id = aws_security_group.app.id
+}
+
+#-----------------------------------------
+# 2.5 SSM VPC Endpoints Rules
+#-----------------------------------------
+resource "aws_security_group_rule" "ssm_vpce_ingress" {
+  count = var.enable_ssm_endpoints ? 1 : 0
+
+  type              = "ingress"
+  description       = "HTTPS from VPC"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = [var.vpc_cidr]
+  security_group_id = aws_security_group.ssm_vpce[0].id
+}
+
+resource "aws_security_group_rule" "ssm_vpce_egress" {
+  count = var.enable_ssm_endpoints ? 1 : 0
+
+  type              = "egress"
+  description       = "All outbound"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.ssm_vpce[0].id
 }
