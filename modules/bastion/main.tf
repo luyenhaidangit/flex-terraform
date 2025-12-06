@@ -2,7 +2,7 @@
 # 1. Security Group (NO INBOUND – SSM Only)
 ############################################
 
-resource "aws_security_group" "this" {
+resource "aws_security_group" "bastion_sg" {
   name        = "${var.name}-bastion-sg"
   description = "Security Group for Bastion Host (SSM only)"
   vpc_id      = var.vpc_id
@@ -19,7 +19,7 @@ resource "aws_security_group_rule" "egress_https" {
   to_port           = 443
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.this.id
+  security_group_id = aws_security_group.bastion_sg.id
 }
 
 # Optional: DNS lookup (recommended)
@@ -29,7 +29,7 @@ resource "aws_security_group_rule" "egress_dns" {
   to_port           = 53
   protocol          = "udp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.this.id
+  security_group_id = aws_security_group.bastion_sg.id
 }
 
 ############################################
@@ -77,10 +77,18 @@ resource "aws_instance" "bastion" {
   ami                    = local.final_ami
   instance_type          = var.instance_type
   subnet_id              = var.subnet_id
-  iam_instance_profile   = aws_iam_instance_profile.this.name
+  iam_instance_profile   = aws_iam_instance_profile.bastion_profile.name
   vpc_security_group_ids = [aws_security_group.this.id]
 
   associate_public_ip_address = false  # BEST PRACTICE (private only)
+
+  metadata_options {
+    http_tokens = "required"
+  }
+
+  root_block_device {
+    encrypted = true
+  }
 
   tags = merge(var.tags, {
     Name = "${var.name}-bastion"
