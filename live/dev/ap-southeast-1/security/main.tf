@@ -1,5 +1,5 @@
 module "sg" {
-  source = "../../../../modules/security-groups"
+  source = "../../../../modules/security"
 
   name   = "flex"
   vpc_id = data.terraform_remote_state.network.outputs.vpc_id

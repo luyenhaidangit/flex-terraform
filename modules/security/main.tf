@@ -68,6 +68,7 @@ resource "aws_security_group" "db" {
 #-----------------------------------------
 # 1.4 SSM VPC Endpoints
 #-----------------------------------------
+/*
 resource "aws_security_group" "ssm_vpce" {
   count = var.enable_ssm_endpoints ? 1 : 0
 
@@ -79,6 +80,7 @@ resource "aws_security_group" "ssm_vpce" {
     Name = "${var.name}-vpce-sg"
   }
 }
+*/
 
 ########################################
 # 2. Security Group Rules
@@ -160,6 +162,7 @@ resource "aws_security_group_rule" "extra" {
 #-----------------------------------------
 # 2.5 SSM VPC Endpoints Rules
 #-----------------------------------------
+/*
 resource "aws_security_group_rule" "ssm_vpce_ingress" {
   count = var.enable_ssm_endpoints ? 1 : 0
 
@@ -183,3 +186,4 @@ resource "aws_security_group_rule" "ssm_vpce_egress" {
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.ssm_vpce[0].id
 }
+*/
