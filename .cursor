@@ -1,0 +1,79 @@
+# Cursor Rules for flex-terraform
+
+## Naming Convention
+
+When naming AWS resources and Terraform variables, follow this standard formula:
+
+```
+<project>-<environment>-<purpose>-<tier>-<az>-<resource>
+```
+
+### Components
+
+| Component     | Description                          | Examples                          |
+|---------------|--------------------------------------|-----------------------------------|
+| `project`     | Project or application name          | `flex`, `myapp`, `acme`           |
+| `environment` | Deployment environment               | `dev`, `stg`, `prod`              |
+| `purpose`     | Function or service name             | `web`, `api`, `db`, `bastion`     |
+| `tier`        | Network tier                         | `public`, `private`, `data`       |
+| `az`          | Availability zone suffix (optional)  | `a`, `b`, `c`                     |
+| `resource`    | AWS resource type                    | `sg`, `subnet`, `rtb`, `igw`, `nat`, `ec2`, `rds` |
+
+### Examples
+
+```hcl
+# VPC
+flex-dev-vpc
+
+# Subnets
+flex-dev-public-a-subnet
+flex-dev-private-b-subnet
+flex-dev-data-c-subnet
+
+# Security Groups
+flex-dev-bastion-sg
+flex-dev-web-sg
+flex-dev-rds-sg
+
+# EC2 Instances
+flex-dev-bastion-ec2
+flex-prod-web-a-ec2
+
+# RDS
+flex-prod-primary-rds
+
+# NAT Gateway
+flex-dev-a-nat
+
+# Internet Gateway
+flex-dev-igw
+
+# Route Tables
+flex-dev-public-rtb
+flex-dev-private-a-rtb
+```
+
+### Rules
+
+1. **Always use lowercase** with hyphens (`-`) as separators
+2. **Omit optional components** if not applicable (e.g., skip `az` for single-AZ resources)
+3. **Keep names short but descriptive** - abbreviate where possible (`sg` not `security-group`)
+4. **Be consistent** across all modules and environments
+5. **Use `name` variable** as prefix in modules, which should contain `<project>-<environment>`
+
+### In Terraform Modules
+
+```hcl
+# Module receives name prefix (e.g., "flex-dev")
+variable "name" {
+  description = "Prefix for resources (format: <project>-<environment>)"
+  type        = string
+}
+
+# Resource naming
+resource "aws_security_group" "bastion_sg" {
+  name = "${var.name}-bastion-sg"  # Results in: flex-dev-bastion-sg
+  ...
+}
+```
+
