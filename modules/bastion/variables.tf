@@ -25,6 +25,12 @@ variable "ami_id" {
   default     = null
 }
 
+variable "volume_size" {
+  description = "Root volume size in GB"
+  type        = number
+  default     = 8
+}
+
 variable "tags" {
   description = "Common tags to apply to all resources"
   type        = map(string)
