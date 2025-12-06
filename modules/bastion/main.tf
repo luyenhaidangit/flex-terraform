@@ -74,12 +74,13 @@ locals {
 ############################################
 
 resource "aws_instance" "bastion" {
-  ami                    = local.final_ami
-  instance_type          = var.instance_type
-  subnet_id              = var.subnet_id
-  iam_instance_profile   = aws_iam_instance_profile.bastion_profile.name
-  vpc_security_group_ids = [aws_security_group.this.id]
-
+  ami                     = local.final_ami
+  instance_type           = var.instance_type
+  subnet_id               = var.subnet_id
+  vpc_security_group_ids  = [aws_security_group.bastion_sg.id]
+  iam_instance_profile    = aws_iam_instance_profile.bastion_profile.name
+  disable_api_termination = true
+  
   associate_public_ip_address = false  # BEST PRACTICE (private only)
 
   metadata_options {
@@ -87,7 +88,9 @@ resource "aws_instance" "bastion" {
   }
 
   root_block_device {
-    encrypted = true
+    volume_size = 8
+    volume_type = "gp3"
+    encrypted   = true
   }
 
   tags = merge(var.tags, {

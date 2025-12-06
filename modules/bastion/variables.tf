@@ -9,7 +9,7 @@ variable "vpc_id" {
 }
 
 variable "subnet_id" {
-  description = "Subnet ID where the Bastion EC2 runs (private recommended)"
+  description = "Private subnet ID where the Bastion EC2 runs"
   type        = string
 }
 
