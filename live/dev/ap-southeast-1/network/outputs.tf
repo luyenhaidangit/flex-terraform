@@ -14,3 +14,6 @@ output "db_subnet_id" {
   value = module.network.db_subnet_id
 }
 
+output "vpc_cidr" {
+  value = module.network.vpc_cidr
+}
