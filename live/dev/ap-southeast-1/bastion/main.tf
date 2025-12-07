@@ -9,10 +9,12 @@ module "bastion" {
     data.terraform_remote_state.security.outputs.bastion_sg_id
   ]
 
-  instance_type              = "t3.micro"
+  ami_id                     = "ami-093a7f5fbae13ff67"       # Amazon Linux 2023 AMI 2023.9.20251117.1 x86_64 HVM kernel-6.1
+  instance_type              = "t2.micro"                    # t2.micro
+  enable_detailed_monitoring = false                         # Free tier eligible
+  
   volume_size                = 8
-  enable_detailed_monitoring = false
-
+  
   tags = {
     Environment = "dev"
     Owner       = "luyenhaidangit"

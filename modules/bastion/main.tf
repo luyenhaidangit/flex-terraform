@@ -34,7 +34,7 @@ resource "aws_iam_instance_profile" "bastion_profile" {
 ############################################
 
 locals {
-  final_ami = var.ami_id != null ? var.ami_id : data.aws_ami.amazon_linux[0].id
+  final_ami = var.ami_id != null ? var.ami_id : data.aws_ami.amazon_linux_2023[0].id
 }
 
 ############################################

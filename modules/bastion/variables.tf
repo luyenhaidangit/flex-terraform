@@ -9,13 +9,13 @@ variable "subnet_id" {
 }
 
 variable "instance_type" {
-  description = "EC2 instance type"
+  description = "EC2 instance type (t2.micro for Free Tier)"
   type        = string
-  default     = "t3.micro"
+  default     = "t2.micro"
 }
 
 variable "ami_id" {
-  description = "Custom AMI ID (optional). If null → auto AMI lookup"
+  description = "Custom AMI ID (optional). If null → auto lookup Amazon Linux 2023 x86_64"
   type        = string
   default     = null
 }
