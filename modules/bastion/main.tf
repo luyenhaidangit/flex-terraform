@@ -15,6 +15,8 @@ resource "aws_iam_role" "bastion_role" {
       Action = "sts:AssumeRole"
     }]
   })
+
+  tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "ssm_core" {
@@ -46,17 +48,26 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids  = var.security_group_ids
   iam_instance_profile    = aws_iam_instance_profile.bastion_profile.name
   disable_api_termination = true
+  monitoring              = var.enable_detailed_monitoring
 
   associate_public_ip_address = false # BEST PRACTICE (private only)
 
   metadata_options {
-    http_tokens = "required"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 1
+    instance_metadata_tags      = "enabled"
   }
 
   root_block_device {
     volume_size = var.volume_size
     volume_type = "gp3"
     encrypted   = true
+    iops        = 3000
+    throughput  = 125
+  }
+
+  lifecycle {
+    ignore_changes = [ami] # Prevent replacement when AMI updates
   }
 
   tags = merge(var.tags, {

@@ -3,11 +3,6 @@ variable "name" {
   type        = string
 }
 
-variable "vpc_id" {
-  description = "VPC ID where the Bastion will be provisioned"
-  type        = string
-}
-
 variable "subnet_id" {
   description = "Private subnet ID where the Bastion EC2 runs"
   type        = string
@@ -34,6 +29,12 @@ variable "volume_size" {
 variable "security_group_ids" {
   description = "List of Security Group IDs to attach to Bastion EC2"
   type        = list(string)
+}
+
+variable "enable_detailed_monitoring" {
+  description = "Enable detailed CloudWatch monitoring (additional cost)"
+  type        = bool
+  default     = false
 }
 
 variable "tags" {

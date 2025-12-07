@@ -2,7 +2,6 @@ module "bastion" {
   source = "../../../../modules/bastion"
 
   name      = "flex"
-  vpc_id    = data.terraform_remote_state.network.outputs.vpc_id
   subnet_id = data.terraform_remote_state.network.outputs.private_subnet_id
 
   # Security Group từ security module
@@ -10,8 +9,9 @@ module "bastion" {
     data.terraform_remote_state.security.outputs.bastion_sg_id
   ]
 
-  instance_type = "t3.micro"
-  volume_size   = 8
+  instance_type              = "t3.micro"
+  volume_size                = 8
+  enable_detailed_monitoring = false
 
   tags = {
     Environment = "dev"
