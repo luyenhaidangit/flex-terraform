@@ -52,8 +52,8 @@ resource "aws_s3_bucket_policy" "logging_bucket_policy" {
     Statement = [
       # Cho phép GetBucketAcl (bucket-level)
       {
-        Sid      = "AWSLogDeliveryAclCheck",
-        Effect   = "Allow",
+        Sid    = "AWSLogDeliveryAclCheck",
+        Effect = "Allow",
         Principal = {
           Service = "delivery.logs.amazonaws.com"
         }
@@ -63,8 +63,8 @@ resource "aws_s3_bucket_policy" "logging_bucket_policy" {
 
       # Cho phép PutObject (object-level)
       {
-        Sid      = "AWSLogDeliveryWrite",
-        Effect   = "Allow",
+        Sid    = "AWSLogDeliveryWrite",
+        Effect = "Allow",
         Principal = {
           Service = "delivery.logs.amazonaws.com"
         }

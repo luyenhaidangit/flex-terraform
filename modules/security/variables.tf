@@ -32,13 +32,6 @@ variable "vpc_cidr" {
   type        = string
 }
 
-# Enable SSM VPC Endpoints SG
-variable "enable_ssm_endpoints" {
-  description = "Create Security Group for SSM VPC Endpoints"
-  type        = bool
-  default     = false
-}
-
 variable "tags" {
   description = "Common tags for all resources"
   type        = map(string)

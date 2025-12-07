@@ -73,8 +73,8 @@ resource "aws_s3_bucket_policy" "config_bucket_policy" {
     Version = "2012-10-17",
     Statement = [
       {
-        Sid       = "AWSConfigBucketPermissionsCheck",
-        Effect    = "Allow",
+        Sid    = "AWSConfigBucketPermissionsCheck",
+        Effect = "Allow",
         Principal = {
           Service = "config.amazonaws.com"
         }
@@ -82,8 +82,8 @@ resource "aws_s3_bucket_policy" "config_bucket_policy" {
         Resource = aws_s3_bucket.config_bucket.arn
       },
       {
-        Sid       = "AWSConfigBucketDelivery",
-        Effect    = "Allow",
+        Sid    = "AWSConfigBucketDelivery",
+        Effect = "Allow",
         Principal = {
           Service = "config.amazonaws.com"
         }
@@ -105,7 +105,7 @@ resource "aws_config_configuration_recorder" "recorder" {
 
   role_arn = aws_iam_role.config_role.arn
   recording_group {
-    all_supported = true
+    all_supported                 = true
     include_global_resource_types = true
   }
 

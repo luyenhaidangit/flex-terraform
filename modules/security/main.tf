@@ -90,36 +90,6 @@ resource "aws_security_group_rule" "egress_https" {
   security_group_id = aws_security_group.bastion_sg.id
 }
 
-#-----------------------------------------
-# 1.5 SSM VPC Endpoints
-# Stateful no need egress
-#-----------------------------------------
-
-resource "aws_security_group" "ssm_vpce" {
-  count = var.enable_ssm_endpoints ? 1 : 0
-
-  name        = "${var.name}-vpce-sg"
-  description = "Security Group for SSM VPC Interface Endpoints"
-  vpc_id      = var.vpc_id
-
-  tags = merge(var.tags, {
-    Name = "${var.name}-vpce-sg"
-  })
-}
-
-# Inbound ec2 -> endpoint ssm
-resource "aws_security_group_rule" "ssm_vpce_ingress" {
-  count = var.enable_ssm_endpoints ? 1 : 0
-
-  type                     = "ingress"
-  description              = "Allow SSM from Bastion + Workers"
-  from_port                = 443
-  to_port                  = 443
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.bastion_sg.id
-  security_group_id        = aws_security_group.ssm_vpce[0].id
-}
-
 ########################################
 # 2. Security Group Rules
 ########################################

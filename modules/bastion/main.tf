@@ -46,8 +46,8 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids  = [aws_security_group.bastion_sg.id]
   iam_instance_profile    = aws_iam_instance_profile.bastion_profile.name
   disable_api_termination = true
-  
-  associate_public_ip_address = false  # BEST PRACTICE (private only)
+
+  associate_public_ip_address = false # BEST PRACTICE (private only)
 
   metadata_options {
     http_tokens = "required"

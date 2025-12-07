@@ -33,3 +33,9 @@ variable "tags" {
   default     = {}
   description = "Tags to apply to resources"
 }
+
+variable "enable_ssm_endpoints" {
+  description = "Create SSM VPC Interface Endpoints with Security Group"
+  type        = bool
+  default     = false
+}

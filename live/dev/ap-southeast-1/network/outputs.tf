@@ -17,3 +17,8 @@ output "db_subnet_id" {
 output "vpc_cidr" {
   value = module.network.vpc_cidr
 }
+
+output "ssm_vpce_sg_id" {
+  description = "Security Group ID for SSM VPC Endpoints"
+  value       = module.network.ssm_vpce_sg_id
+}

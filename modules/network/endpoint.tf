@@ -2,6 +2,59 @@
 # 6. VPC Endpoints
 ########################################
 
+locals {
+  ssm_endpoints = [
+    "ssm",
+    "ssmmessages",
+    "ec2messages"
+  ]
+}
+
+#-----------------------------------------
+# 6.1 SSM VPC Endpoint Security Group
+#-----------------------------------------
+resource "aws_security_group" "ssm_vpce" {
+  count = var.enable_ssm_endpoints ? 1 : 0
+
+  name        = "${var.name}-vpce-sg"
+  description = "Security Group for SSM VPC Interface Endpoints"
+  vpc_id      = aws_vpc.this.id
+
+  # Inbound: Allow HTTPS from VPC (EC2/Bastion → Endpoint)
+  ingress {
+    description = "Allow HTTPS from VPC"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
+  }
+
+  tags = merge(var.tags, {
+    Name = "${var.name}-vpce-sg"
+  })
+}
+
+#-----------------------------------------
+# 6.2 SSM Interface Endpoints
+#-----------------------------------------
+resource "aws_vpc_endpoint" "ssm" {
+  for_each = var.enable_ssm_endpoints ? toset(local.ssm_endpoints) : []
+
+  vpc_id            = aws_vpc.this.id
+  service_name      = "com.amazonaws.${data.aws_region.current.name}.${each.key}"
+  vpc_endpoint_type = "Interface"
+
+  subnet_ids = [aws_subnet.private.id]
+
+  security_group_ids = [aws_security_group.ssm_vpce[0].id]
+
+  private_dns_enabled = true
+
+  tags = merge(var.tags, {
+    Name = "${var.name}-${each.key}-endpoint"
+  })
+}
+
 # Gateway endpoint: S3, DynamoDB
 /*
 resource "aws_vpc_endpoint" "s3" {
