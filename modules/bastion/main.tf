@@ -43,7 +43,7 @@ resource "aws_instance" "bastion" {
   ami                     = local.final_ami
   instance_type           = var.instance_type
   subnet_id               = var.subnet_id
-  vpc_security_group_ids  = [aws_security_group.bastion_sg.id]
+  vpc_security_group_ids  = var.security_group_ids
   iam_instance_profile    = aws_iam_instance_profile.bastion_profile.name
   disable_api_termination = true
 

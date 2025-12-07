@@ -31,6 +31,11 @@ variable "volume_size" {
   default     = 8
 }
 
+variable "security_group_ids" {
+  description = "List of Security Group IDs to attach to Bastion EC2"
+  type        = list(string)
+}
+
 variable "tags" {
   description = "Common tags to apply to all resources"
   type        = map(string)
