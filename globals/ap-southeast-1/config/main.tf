@@ -128,10 +128,10 @@ resource "aws_config_delivery_channel" "delivery" {
   ]
 }
 
-# 10. Endable recorder
+# 10. Enable recorder
 resource "aws_config_configuration_recorder_status" "recorder_status" {
   name       = aws_config_configuration_recorder.recorder.name
-  is_enabled = true
+  is_enabled = false # ← Tắt recorder để tiết kiệm chi phí
 
   depends_on = [
     aws_config_delivery_channel.delivery
