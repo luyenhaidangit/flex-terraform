@@ -10,8 +10,8 @@ variable "vpc_id" {
 
 # ALB inbound CIDRs (Internet or CloudFront)
 variable "alb_ingress_cidrs" {
-  type        = list(string)
-  default     = ["0.0.0.0/0"]
+  type    = list(string)
+  default = ["0.0.0.0/0"]
 }
 
 # Extra dynamic rules for App SG
@@ -26,11 +26,10 @@ variable "extra_rules" {
   default = []
 }
 
-# VPC CIDR for SSM VPC Endpoints
+# VPC CIDR for internal traffic rules
 variable "vpc_cidr" {
-  description = "VPC CIDR block for SSM endpoints ingress"
+  description = "VPC CIDR block for internal traffic (required for Bastion egress and DB egress)"
   type        = string
-  default     = null
 }
 
 # Enable SSM VPC Endpoints SG
@@ -38,4 +37,10 @@ variable "enable_ssm_endpoints" {
   description = "Create Security Group for SSM VPC Endpoints"
   type        = bool
   default     = false
+}
+
+variable "tags" {
+  description = "Common tags for all resources"
+  type        = map(string)
+  default     = {}
 }

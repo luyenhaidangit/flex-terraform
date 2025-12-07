@@ -18,9 +18,9 @@ resource "aws_security_group" "alb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
+  tags = merge(var.tags, {
     Name = "${var.name}-sg-alb"
-  }
+  })
 }
 
 #-----------------------------------------
@@ -39,9 +39,9 @@ resource "aws_security_group" "app" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
+  tags = merge(var.tags, {
     Name = "${var.name}-sg-app"
-  }
+  })
 }
 
 #-----------------------------------------
@@ -53,16 +53,16 @@ resource "aws_security_group" "db" {
   vpc_id      = var.vpc_id
 
   egress {
-    description = "Allow outbound"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    description = "Outbound to VPC only"
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
   }
 
-  tags = {
+  tags = merge(var.tags, {
     Name = "${var.name}-sg-db"
-  }
+  })
 }
 
 #-----------------------------------------
@@ -79,17 +79,14 @@ resource "aws_security_group" "bastion_sg" {
   })
 }
 
-# Outbound only → 443 (SSM, EC2Messages, SSMMessages)
+# Outbound only → 443 to VPC (SSM VPC Endpoints)
 resource "aws_security_group_rule" "egress_https" {
   type              = "egress"
+  description       = "HTTPS to VPC for SSM endpoints"
   from_port         = 443
   to_port           = 443
   protocol          = "tcp"
-  prefix_list_ids = [
-    data.aws_prefix_list.ssm.id,
-    data.aws_prefix_list.ec2messages.id,
-    data.aws_prefix_list.ssmmessages.id
-  ]
+  cidr_blocks       = [var.vpc_cidr]
   security_group_id = aws_security_group.bastion_sg.id
 }
 
@@ -105,9 +102,9 @@ resource "aws_security_group" "ssm_vpce" {
   description = "Security Group for SSM VPC Interface Endpoints"
   vpc_id      = var.vpc_id
 
-  tags = {
+  tags = merge(var.tags, {
     Name = "${var.name}-vpce-sg"
-  }
+  })
 }
 
 # Inbound ec2 -> endpoint ssm
@@ -120,7 +117,7 @@ resource "aws_security_group_rule" "ssm_vpce_ingress" {
   to_port                  = 443
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.bastion_sg.id
-  security_group_id        = aws_security_group.ssm_vpce.id
+  security_group_id        = aws_security_group.ssm_vpce[0].id
 }
 
 ########################################
@@ -193,6 +190,7 @@ resource "aws_security_group_rule" "extra" {
   for_each = { for r in var.extra_rules : r.name => r }
 
   type              = "ingress"
+  description       = each.value.name
   from_port         = each.value.from_port
   to_port           = each.value.to_port
   protocol          = each.value.protocol
