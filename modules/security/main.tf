@@ -66,9 +66,38 @@ resource "aws_security_group" "db" {
 }
 
 #-----------------------------------------
-# 1.4 SSM VPC Endpoints
+# 1.4 Bastion
 #-----------------------------------------
-/*
+
+resource "aws_security_group" "bastion_sg" {
+  name        = "${var.name}-bastion-sg"
+  description = "Security Group for Bastion Host (SSM only)"
+  vpc_id      = var.vpc_id
+
+  tags = merge(var.tags, {
+    Name = "${var.name}-bastion-sg"
+  })
+}
+
+# Outbound only → 443 (SSM, EC2Messages, SSMMessages)
+resource "aws_security_group_rule" "egress_https" {
+  type              = "egress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  prefix_list_ids = [
+    data.aws_prefix_list.ssm.id,
+    data.aws_prefix_list.ec2messages.id,
+    data.aws_prefix_list.ssmmessages.id
+  ]
+  security_group_id = aws_security_group.bastion_sg.id
+}
+
+#-----------------------------------------
+# 1.5 SSM VPC Endpoints
+# Stateful no need egress
+#-----------------------------------------
+
 resource "aws_security_group" "ssm_vpce" {
   count = var.enable_ssm_endpoints ? 1 : 0
 
@@ -80,7 +109,19 @@ resource "aws_security_group" "ssm_vpce" {
     Name = "${var.name}-vpce-sg"
   }
 }
-*/
+
+# Inbound ec2 -> endpoint ssm
+resource "aws_security_group_rule" "ssm_vpce_ingress" {
+  count = var.enable_ssm_endpoints ? 1 : 0
+
+  type                     = "ingress"
+  description              = "Allow SSM from Bastion + Workers"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.bastion_sg.id
+  security_group_id        = aws_security_group.ssm_vpce.id
+}
 
 ########################################
 # 2. Security Group Rules
@@ -158,32 +199,3 @@ resource "aws_security_group_rule" "extra" {
   cidr_blocks       = each.value.cidr_blocks
   security_group_id = aws_security_group.app.id
 }
-
-#-----------------------------------------
-# 2.5 SSM VPC Endpoints Rules
-#-----------------------------------------
-/*
-resource "aws_security_group_rule" "ssm_vpce_ingress" {
-  count = var.enable_ssm_endpoints ? 1 : 0
-
-  type              = "ingress"
-  description       = "HTTPS from VPC"
-  from_port         = 443
-  to_port           = 443
-  protocol          = "tcp"
-  cidr_blocks       = [var.vpc_cidr]
-  security_group_id = aws_security_group.ssm_vpce[0].id
-}
-
-resource "aws_security_group_rule" "ssm_vpce_egress" {
-  count = var.enable_ssm_endpoints ? 1 : 0
-
-  type              = "egress"
-  description       = "All outbound"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.ssm_vpce[0].id
-}
-*/

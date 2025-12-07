@@ -1,38 +1,4 @@
 ############################################
-# 1. Security Group (NO INBOUND – SSM Only)
-############################################
-
-resource "aws_security_group" "bastion_sg" {
-  name        = "${var.name}-bastion-sg"
-  description = "Security Group for Bastion Host (SSM only)"
-  vpc_id      = var.vpc_id
-
-  tags = merge(var.tags, {
-    Name = "${var.name}-bastion-sg"
-  })
-}
-
-# Outbound only → 443 (SSM, EC2Messages, SSMMessages)
-resource "aws_security_group_rule" "egress_https" {
-  type              = "egress"
-  from_port         = 443
-  to_port           = 443
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.bastion_sg.id
-}
-
-# Optional: DNS lookup (recommended)
-resource "aws_security_group_rule" "egress_dns" {
-  type              = "egress"
-  from_port         = 53
-  to_port           = 53
-  protocol          = "udp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.bastion_sg.id
-}
-
-############################################
 # 2. IAM Role for EC2 → SSM Access
 ############################################
 
