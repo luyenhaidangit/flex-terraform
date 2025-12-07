@@ -41,7 +41,7 @@ resource "aws_vpc_endpoint" "ssm" {
   for_each = var.enable_ssm_endpoints ? toset(local.ssm_endpoints) : []
 
   vpc_id            = aws_vpc.this.id
-  service_name      = "com.amazonaws.${data.aws_region.current.name}.${each.key}"
+  service_name      = "com.amazonaws.${data.aws_region.current.id}.${each.key}"
   vpc_endpoint_type = "Interface"
 
   subnet_ids = [aws_subnet.private.id]
