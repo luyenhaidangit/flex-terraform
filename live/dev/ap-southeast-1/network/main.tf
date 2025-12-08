@@ -9,7 +9,7 @@ module "network" {
   private_subnet_cidr = "10.10.11.0/24"
   db_subnet_cidr      = "10.10.21.0/24"
 
-  enable_ssm_endpoints = true
+  enable_ssm_endpoints = false
 
   tags = {
     Name        = "network"
