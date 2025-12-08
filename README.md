@@ -45,4 +45,6 @@ set AWS_DEFAULT_REGION=ap-southeast-1
 Khi các biến môi trường này tồn tại, Terraform sẽ sử dụng chúng thay vì cấu hình từ AWS CLI.
 
 # Off resource
+Off EC2
+Off network
 cd live\dev\ap-southeast-1\network
