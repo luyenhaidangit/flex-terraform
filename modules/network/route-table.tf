@@ -2,7 +2,9 @@
 # 5. Route Tables
 ########################################
 
-# Public RT → IGW
+#-----------------------------------------
+# 5.1 Public Route Table → IGW (shared)
+#-----------------------------------------
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id
 
@@ -20,37 +22,50 @@ resource "aws_route_table" "public" {
   )
 }
 
-resource "aws_route_table_association" "public_assoc" {
+resource "aws_route_table_association" "public" {
+  count = length(var.azs)
+
   route_table_id = aws_route_table.public.id
-  subnet_id      = aws_subnet.public.id
+  subnet_id      = aws_subnet.public[count.index].id
 }
 
-# Private RT → NAT per AZ
+#-----------------------------------------
+# 5.2 Private Route Tables → NAT Gateway
+#-----------------------------------------
 resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.this.id
+  count = length(var.azs)
 
-  /*
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat.id
-  }
-  */
+  vpc_id = aws_vpc.this.id
 
   tags = merge(
     var.tags,
     {
-      Name = "${var.name}-private-rt"
+      Name = "${var.name}-private-rt-${var.azs[count.index]}"
       Tier = "private"
     }
   )
 }
 
-resource "aws_route_table_association" "private_assoc" {
-  route_table_id = aws_route_table.private.id
-  subnet_id      = aws_subnet.private.id
+# Route to NAT Gateway (if enabled)
+resource "aws_route" "private_nat" {
+  count = var.enable_nat_gateway ? length(var.azs) : 0
+
+  route_table_id         = aws_route_table.private[count.index].id
+  destination_cidr_block = "0.0.0.0/0"
+  # If single NAT, all private subnets use NAT[0]; otherwise use NAT per AZ
+  nat_gateway_id = var.single_nat_gateway ? aws_nat_gateway.this[0].id : aws_nat_gateway.this[count.index].id
 }
 
-# DB subnet – isolated (không ra Internet)
+resource "aws_route_table_association" "private" {
+  count = length(var.azs)
+
+  route_table_id = aws_route_table.private[count.index].id
+  subnet_id      = aws_subnet.private[count.index].id
+}
+
+#-----------------------------------------
+# 5.3 DB Route Table – isolated (no Internet)
+#-----------------------------------------
 resource "aws_route_table" "db" {
   vpc_id = aws_vpc.this.id
 
@@ -63,7 +78,9 @@ resource "aws_route_table" "db" {
   )
 }
 
-resource "aws_route_table_association" "db_assoc" {
+resource "aws_route_table_association" "db" {
+  count = length(var.azs)
+
   route_table_id = aws_route_table.db.id
-  subnet_id      = aws_subnet.db.id
+  subnet_id      = aws_subnet.db[count.index].id
 }
