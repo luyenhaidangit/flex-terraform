@@ -32,7 +32,7 @@ output "node_role_name" {
 
 output "ebs_csi_role_arn" {
   description = "ARN of the EBS CSI driver IAM role"
-  value       = aws_iam_role.ebs_csi.arn
+  value       = var.enable_ebs_csi_irsa ? aws_iam_role.ebs_csi[0].arn : null
 }
 
 ########################################
@@ -41,5 +41,5 @@ output "ebs_csi_role_arn" {
 
 output "vpc_cni_role_arn" {
   description = "ARN of the VPC CNI IAM role"
-  value       = aws_iam_role.vpc_cni.arn
+  value       = var.enable_vpc_cni_irsa ? aws_iam_role.vpc_cni[0].arn : null
 }

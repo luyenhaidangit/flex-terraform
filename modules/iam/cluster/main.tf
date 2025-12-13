@@ -54,8 +54,10 @@ resource "aws_iam_role_policy_attachment" "node_ssm_policy" {
 ########################################
 
 resource "aws_iam_role" "ebs_csi" {
+  count = var.enable_ebs_csi_irsa ? 1 : 0
+
   name               = "${var.name}-irsa-ebs-csi"
-  assume_role_policy = data.aws_iam_policy_document.ebs_csi_assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.ebs_csi_assume_role[0].json
 
   tags = {
     Name = "${var.name}-irsa-ebs-csi"
@@ -63,7 +65,9 @@ resource "aws_iam_role" "ebs_csi" {
 }
 
 resource "aws_iam_role_policy_attachment" "ebs_csi" {
-  role       = aws_iam_role.ebs_csi.name
+  count = var.enable_ebs_csi_irsa ? 1 : 0
+
+  role       = aws_iam_role.ebs_csi[0].name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
 }
 
@@ -72,8 +76,10 @@ resource "aws_iam_role_policy_attachment" "ebs_csi" {
 ########################################
 
 resource "aws_iam_role" "vpc_cni" {
+  count = var.enable_vpc_cni_irsa ? 1 : 0
+
   name               = "${var.name}-irsa-vpc-cni"
-  assume_role_policy = data.aws_iam_policy_document.vpc_cni_assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.vpc_cni_assume_role[0].json
 
   tags = {
     Name = "${var.name}-irsa-vpc-cni"
@@ -81,6 +87,8 @@ resource "aws_iam_role" "vpc_cni" {
 }
 
 resource "aws_iam_role_policy_attachment" "vpc_cni" {
-  role       = aws_iam_role.vpc_cni.name
+  count = var.enable_vpc_cni_irsa ? 1 : 0
+
+  role       = aws_iam_role.vpc_cni[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 }
