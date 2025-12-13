@@ -7,14 +7,6 @@ resource "aws_security_group" "cluster" {
   description = "Security group for EKS cluster control plane"
   vpc_id      = var.vpc_id
 
-  egress {
-    description = "All outbound"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   tags = merge(
     var.tags,
     { Name = "${var.name}-eks-cluster-sg" }
@@ -66,7 +58,7 @@ resource "aws_security_group_rule" "node_ingress_self" {
   type              = "ingress"
   description       = "Allow nodes to communicate with each other"
   from_port         = 0
-  to_port           = 65535
+  to_port           = 0
   protocol          = "-1"
   self              = true
   security_group_id = aws_security_group.node.id
