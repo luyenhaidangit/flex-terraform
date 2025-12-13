@@ -359,3 +359,4 @@ resource "aws_eks_access_entry" "karpenter_node" {
   principal_arn = aws_iam_role.karpenter_node[0].arn
   type          = "EC2_LINUX"
 }
+

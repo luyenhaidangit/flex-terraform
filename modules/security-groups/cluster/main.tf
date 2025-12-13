@@ -1,11 +1,19 @@
 ########################################
-# 1. EKS Cluster Security Group
+# EKS Cluster Security Group
 ########################################
 
 resource "aws_security_group" "cluster" {
   name        = "${var.name}-eks-cluster-sg"
   description = "Security group for EKS cluster control plane"
   vpc_id      = var.vpc_id
+
+  egress {
+    description = "All outbound"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   tags = merge(
     var.tags,
@@ -36,7 +44,7 @@ resource "aws_security_group_rule" "cluster_egress_all" {
 }
 
 ########################################
-# 2. EKS Node Security Group
+# EKS Node Security Group
 ########################################
 
 resource "aws_security_group" "node" {

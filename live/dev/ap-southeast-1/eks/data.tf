@@ -11,3 +11,4 @@ data "terraform_remote_state" "network" {
     region = "ap-southeast-1"
   }
 }
+

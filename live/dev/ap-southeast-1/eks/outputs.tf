@@ -67,3 +67,4 @@ output "kubectl_config" {
   description = "Command to configure kubectl"
   value       = module.eks.kubectl_config
 }
+

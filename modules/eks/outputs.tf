@@ -158,3 +158,4 @@ output "kubectl_config" {
   description = "kubectl configuration command"
   value       = "aws eks update-kubeconfig --region ${data.aws_region.current.name} --name ${aws_eks_cluster.this.name}"
 }
+

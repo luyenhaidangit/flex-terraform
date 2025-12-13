@@ -111,3 +111,4 @@ resource "aws_launch_template" "node" {
     { Name = "${var.name}-${each.key}-lt" }
   )
 }
+

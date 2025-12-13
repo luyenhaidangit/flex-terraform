@@ -145,3 +145,4 @@ helm install karpenter karpenter/karpenter \
 - ✅ Network policies enabled (VPC CNI)
 - ✅ Control plane logging enabled
 - ✅ SSM access for node debugging
+

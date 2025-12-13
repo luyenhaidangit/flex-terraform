@@ -185,3 +185,4 @@ variable "kms_key_arn" {
   default     = ""
   description = "Existing KMS key ARN for secrets encryption (if empty, creates new key)"
 }
+

@@ -66,3 +66,4 @@ resource "aws_eks_addon" "this" {
     aws_eks_node_group.this
   ]
 }
+
