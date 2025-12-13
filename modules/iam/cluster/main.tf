@@ -41,11 +41,6 @@ resource "aws_iam_role_policy_attachment" "node_worker_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
 }
 
-resource "aws_iam_role_policy_attachment" "node_cni_policy" {
-  role       = aws_iam_role.node.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-}
-
 resource "aws_iam_role_policy_attachment" "node_ecr_policy" {
   role       = aws_iam_role.node.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
@@ -61,12 +56,12 @@ resource "aws_iam_role_policy_attachment" "node_ssm_policy" {
 ########################################
 
 resource "aws_iam_role" "ebs_csi" {
-  name               = "${var.name}-ebs-csi-role"
+  name               = "${var.name}-irsa-ebs-csi"
   assume_role_policy = data.aws_iam_policy_document.ebs_csi_assume_role.json
 
   tags = merge(
     var.tags,
-    { Name = "${var.name}-ebs-csi-role" }
+    { Name = "${var.name}-irsa-ebs-csi" }
   )
 }
 
@@ -80,12 +75,12 @@ resource "aws_iam_role_policy_attachment" "ebs_csi" {
 ########################################
 
 resource "aws_iam_role" "vpc_cni" {
-  name               = "${var.name}-vpc-cni-role"
+  name               = "${var.name}-irsa-vpc-cni"
   assume_role_policy = data.aws_iam_policy_document.vpc_cni_assume_role.json
 
   tags = merge(
     var.tags,
-    { Name = "${var.name}-vpc-cni-role" }
+    { Name = "${var.name}-irsa-vpc-cni" }
   )
 }
 
