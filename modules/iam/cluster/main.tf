@@ -6,10 +6,9 @@ resource "aws_iam_role" "cluster" {
   name               = "${var.name}-eks-cluster-role"
   assume_role_policy = data.aws_iam_policy_document.cluster_assume_role.json
 
-  tags = merge(
-    var.tags,
-    { Name = "${var.name}-eks-cluster-role" }
-  )
+  tags = {
+    Name = "${var.name}-eks-cluster-role"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_policy" {
@@ -30,10 +29,9 @@ resource "aws_iam_role" "node" {
   name               = "${var.name}-eks-node-role"
   assume_role_policy = data.aws_iam_policy_document.node_assume_role.json
 
-  tags = merge(
-    var.tags,
-    { Name = "${var.name}-eks-node-role" }
-  )
+  tags = {
+    Name = "${var.name}-eks-node-role"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "node_worker_policy" {
@@ -59,10 +57,9 @@ resource "aws_iam_role" "ebs_csi" {
   name               = "${var.name}-irsa-ebs-csi"
   assume_role_policy = data.aws_iam_policy_document.ebs_csi_assume_role.json
 
-  tags = merge(
-    var.tags,
-    { Name = "${var.name}-irsa-ebs-csi" }
-  )
+  tags = {
+    Name = "${var.name}-irsa-ebs-csi"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "ebs_csi" {
@@ -78,10 +75,9 @@ resource "aws_iam_role" "vpc_cni" {
   name               = "${var.name}-irsa-vpc-cni"
   assume_role_policy = data.aws_iam_policy_document.vpc_cni_assume_role.json
 
-  tags = merge(
-    var.tags,
-    { Name = "${var.name}-irsa-vpc-cni" }
-  )
+  tags = {
+    Name = "${var.name}-irsa-vpc-cni"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "vpc_cni" {

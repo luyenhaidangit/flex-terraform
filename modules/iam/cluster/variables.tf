@@ -16,13 +16,3 @@ variable "oidc_provider_url" {
   description = "URL of the EKS OIDC provider (without https://)"
   type        = string
 }
-
-########################################
-# Optional Variables
-########################################
-
-variable "tags" {
-  description = "A map of tags to apply to all resources"
-  type        = map(string)
-  default     = {}
-}
