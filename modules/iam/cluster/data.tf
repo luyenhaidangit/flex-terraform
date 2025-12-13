@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "node_assume_role" {
 ########################################
 
 data "aws_iam_policy_document" "ebs_csi_assume_role" {
-  count = var.enable_ebs_csi_irsa ? 1 : 0
+  count = (var.enable_ebs_csi_irsa && local.irsa_enabled) ? 1 : 0
 
   statement {
     effect = "Allow"
@@ -60,7 +60,7 @@ data "aws_iam_policy_document" "ebs_csi_assume_role" {
 ########################################
 
 data "aws_iam_policy_document" "vpc_cni_assume_role" {
-  count = var.enable_vpc_cni_irsa ? 1 : 0
+  count = (var.enable_vpc_cni_irsa && local.irsa_enabled) ? 1 : 0
 
   statement {
     effect = "Allow"

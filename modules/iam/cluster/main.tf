@@ -1,4 +1,13 @@
 ########################################
+# Locals
+########################################
+
+locals {
+  # IRSA chỉ được tạo khi có đủ OIDC provider info
+  irsa_enabled = var.oidc_provider_arn != null && var.oidc_provider_url != null
+}
+
+########################################
 # EKS Cluster IAM Role
 ########################################
 
@@ -54,7 +63,7 @@ resource "aws_iam_role_policy_attachment" "node_ssm_policy" {
 ########################################
 
 resource "aws_iam_role" "ebs_csi" {
-  count = var.enable_ebs_csi_irsa ? 1 : 0
+  count = (var.enable_ebs_csi_irsa && local.irsa_enabled) ? 1 : 0
 
   name               = "${var.name}-irsa-ebs-csi"
   assume_role_policy = data.aws_iam_policy_document.ebs_csi_assume_role[0].json
@@ -65,7 +74,7 @@ resource "aws_iam_role" "ebs_csi" {
 }
 
 resource "aws_iam_role_policy_attachment" "ebs_csi" {
-  count = var.enable_ebs_csi_irsa ? 1 : 0
+  count = (var.enable_ebs_csi_irsa && local.irsa_enabled) ? 1 : 0
 
   role       = aws_iam_role.ebs_csi[0].name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
@@ -76,7 +85,7 @@ resource "aws_iam_role_policy_attachment" "ebs_csi" {
 ########################################
 
 resource "aws_iam_role" "vpc_cni" {
-  count = var.enable_vpc_cni_irsa ? 1 : 0
+  count = (var.enable_vpc_cni_irsa && local.irsa_enabled) ? 1 : 0
 
   name               = "${var.name}-irsa-vpc-cni"
   assume_role_policy = data.aws_iam_policy_document.vpc_cni_assume_role[0].json
@@ -87,7 +96,7 @@ resource "aws_iam_role" "vpc_cni" {
 }
 
 resource "aws_iam_role_policy_attachment" "vpc_cni" {
-  count = var.enable_vpc_cni_irsa ? 1 : 0
+  count = (var.enable_vpc_cni_irsa && local.irsa_enabled) ? 1 : 0
 
   role       = aws_iam_role.vpc_cni[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
