@@ -19,3 +19,15 @@ module "bastion_security_group" {
   name   = "dev-flex"
   vpc_id = module.vpc.vpc_id
 }
+
+########################################
+# SSM VPC Endpoints Security Group
+########################################
+
+module "ssm_vpce_security_group" {
+  source = "../../modules/security-groups/ssm"
+
+  name     = "dev-flex"
+  vpc_id   = module.vpc.vpc_id
+  vpc_cidr = module.vpc.vpc_cidr_block
+}
