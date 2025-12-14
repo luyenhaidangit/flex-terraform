@@ -21,7 +21,10 @@ resource "aws_eks_cluster" "this" {
   # Encryption at Rest (KMS)
   ########################################
   dynamic "encryption_config" {
-    for_each = var.enable_cluster_encryption ? [1] : []
+    for_each = (
+      var.enable_cluster_encryption && var.kms_key_arn != null
+    ) ? [1] : []
+
     content {
       provider {
         key_arn = var.kms_key_arn
@@ -34,13 +37,7 @@ resource "aws_eks_cluster" "this" {
   # Control Plane Logging
   ########################################
 
-  enabled_cluster_log_types = [
-    "api",
-    "audit",
-    "authenticator",
-    "controllerManager",
-    "scheduler"
-  ]
+  enabled_cluster_log_types = var.cluster_enabled_log_types
 
   ########################################
   # Access & Authentication

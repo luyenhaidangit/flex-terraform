@@ -7,12 +7,6 @@ variable "name" {
   type        = string
 }
 
-variable "cluster_version" {
-  description = "Kubernetes version for the EKS cluster"
-  type        = string
-  default     = "1.34"
-}
-
 variable "private_subnet_ids" {
   description = "List of private subnet IDs for the EKS cluster"
   type        = list(string)
@@ -29,8 +23,14 @@ variable "cluster_security_group_ids" {
 }
 
 ########################################
-# Encryption
+# Optional Variables
 ########################################
+
+variable "cluster_version" {
+  description = "Kubernetes version for the EKS cluster"
+  type        = string
+  default     = "1.29"
+}
 
 variable "enable_cluster_encryption" {
   description = "Enable secrets encryption with KMS"
@@ -44,27 +44,14 @@ variable "kms_key_arn" {
   default     = null
 
   validation {
-    condition     = var.kms_key_arn == null || can(regex("^arn:aws:kms:[a-z0-9-]+:[0-9]+:key/[a-zA-Z0-9-]+$", var.kms_key_arn))
-    error_message = "kms_key_arn must be a valid KMS key ARN (e.g., arn:aws:kms:ap-southeast-1:123456789012:key/xxx-xxx)"
+    condition     = !var.enable_cluster_encryption || var.kms_key_arn != null
+    error_message = "kms_key_arn is required when enable_cluster_encryption = true."
   }
 }
-
-########################################
-# Logging
-########################################
 
 variable "cluster_enabled_log_types" {
   description = "List of control plane log types to enable (api, audit, authenticator, controllerManager, scheduler)"
   type        = list(string)
-  default     = ["api", "audit", "authenticator"]
+  default     = ["api","audit","authenticator","controllerManager","scheduler"]
 }
 
-########################################
-# Tags
-########################################
-
-variable "tags" {
-  description = "A map of tags to apply to all resources"
-  type        = map(string)
-  default     = {}
-}
