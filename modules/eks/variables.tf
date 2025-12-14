@@ -18,26 +18,14 @@ variable "private_subnet_ids" {
   type        = list(string)
 }
 
-########################################
-# Cluster Endpoint Access
-########################################
-
-variable "cluster_endpoint_private_access" {
-  description = "Enable private API server endpoint"
-  type        = bool
-  default     = true
+variable "cluster_role_arn" {
+  description = "ARN of the IAM role for the EKS cluster"
+  type        = string
 }
 
-variable "cluster_endpoint_public_access" {
-  description = "Enable public API server endpoint"
-  type        = bool
-  default     = false
-}
-
-variable "cluster_endpoint_public_access_cidrs" {
-  description = "List of CIDR blocks that can access the public API server endpoint"
+variable "cluster_security_group_ids" {
+  description = "List of security group IDs for the EKS cluster"
   type        = list(string)
-  default     = ["0.0.0.0/0"]
 }
 
 ########################################

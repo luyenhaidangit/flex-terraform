@@ -5,22 +5,26 @@
 resource "aws_eks_cluster" "this" {
   name     = "${var.name}-cluster"
   version  = var.cluster_version
-  role_arn = aws_iam_role.cluster.arn
+  role_arn = var.cluster_role_arn
 
+  ########################################
+  # Networking
+  ########################################
   vpc_config {
     subnet_ids              = var.private_subnet_ids
-    endpoint_private_access = var.cluster_endpoint_private_access
-    endpoint_public_access  = var.cluster_endpoint_public_access
-    public_access_cidrs     = var.cluster_endpoint_public_access_cidrs
-    security_group_ids      = [aws_security_group.cluster.id]
+    security_group_ids      = var.cluster_security_group_ids
+    endpoint_private_access = true
+    endpoint_public_access  = false
   }
 
-  # Secrets encryption with KMS
+  ########################################
+  # Encryption at Rest (KMS)
+  ########################################
   dynamic "encryption_config" {
-    for_each = var.cluster_encryption_config ? [1] : []
+    for_each = var.enable_cluster_encryption ? [1] : []
     content {
       provider {
-        key_arn = var.kms_key_arn != "" ? var.kms_key_arn : aws_kms_key.eks[0].arn
+        key_arn = var.kms_key_arn
       }
       resources = ["secrets"]
     }
