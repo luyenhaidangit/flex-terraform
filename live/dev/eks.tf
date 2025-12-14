@@ -13,6 +13,8 @@
 module "eks" {
   source = "../../modules/eks"
 
+  enable_eks = true
+
   name               = "dev-flex"
   cluster_version    = "1.29"
   private_subnet_ids = data.terraform_remote_state.network.outputs.private_subnet_ids

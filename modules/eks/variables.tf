@@ -26,6 +26,11 @@ variable "cluster_security_group_ids" {
 # Optional Variables
 ########################################
 
+variable "enable_eks" {
+  type    = bool
+  default = false
+}
+
 variable "cluster_version" {
   description = "Kubernetes version for the EKS cluster"
   type        = string

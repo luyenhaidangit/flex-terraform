@@ -3,6 +3,8 @@
 ########################################
 
 resource "aws_eks_cluster" "this" {
+  count  = var.enable_eks ? 1 : 0
+
   name     = "${var.name}-cluster"
   version  = var.cluster_version
   role_arn = var.cluster_role_arn
