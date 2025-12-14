@@ -32,16 +32,21 @@ variable "cluster_security_group_ids" {
 # Encryption
 ########################################
 
-variable "cluster_encryption_config" {
+variable "enable_cluster_encryption" {
   description = "Enable secrets encryption with KMS"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "kms_key_arn" {
-  description = "ARN of existing KMS key for secrets encryption. If empty, a new key will be created"
+  description = "ARN of KMS key for secrets encryption. Required when enable_cluster_encryption = true"
   type        = string
-  default     = ""
+  default     = null
+
+  validation {
+    condition     = var.kms_key_arn == null || can(regex("^arn:aws:kms:[a-z0-9-]+:[0-9]+:key/[a-zA-Z0-9-]+$", var.kms_key_arn))
+    error_message = "kms_key_arn must be a valid KMS key ARN (e.g., arn:aws:kms:ap-southeast-1:123456789012:key/xxx-xxx)"
+  }
 }
 
 ########################################

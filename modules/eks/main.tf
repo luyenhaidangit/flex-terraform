@@ -50,14 +50,19 @@ resource "aws_eks_cluster" "this" {
     bootstrap_cluster_creator_admin_permissions = true
   }
 
-  tags = merge(
-    var.tags,
-    { Name = "${var.name}-cluster" }
-  )
-
+  ########################################
+  # Dependencies
+  # depends_on:aws_cloudwatch_log_group.cluster
+  ########################################
   depends_on = [
     aws_iam_role_policy_attachment.cluster_policy,
-    aws_iam_role_policy_attachment.cluster_vpc_resource_controller,
-    aws_cloudwatch_log_group.cluster,
+    aws_iam_role_policy_attachment.cluster_vpc_resource_controller
   ]
+
+  ########################################
+  # Tags
+  ########################################
+  tags = {
+    Name = "${var.name}-cluster"
+  }
 }
