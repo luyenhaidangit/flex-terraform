@@ -48,15 +48,6 @@ resource "aws_eks_cluster" "this" {
   }
 
   ########################################
-  # Dependencies
-  # depends_on:aws_cloudwatch_log_group.cluster
-  ########################################
-  depends_on = [
-    aws_iam_role_policy_attachment.cluster_policy,
-    aws_iam_role_policy_attachment.cluster_vpc_resource_controller
-  ]
-
-  ########################################
   # Tags
   ########################################
   tags = {
