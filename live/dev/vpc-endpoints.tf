@@ -5,6 +5,8 @@
 module "ssm_vpc_endpoints" {
   source = "../../modules/vpc-endpoints/ssm"
 
+  enable_ssm_endpoints = true
+
   name             = "dev-flex"
   vpc_id           = module.vpc.vpc_id
   subnet_ids       = [

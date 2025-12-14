@@ -29,5 +29,5 @@ variable "security_group_id" {
 variable "enable_ssm_endpoints" {
   description = "Enable SSM VPC endpoints"
   type        = bool
-  default     = true
+  default     = false
 }
