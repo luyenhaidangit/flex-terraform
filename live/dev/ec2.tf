@@ -1,5 +1,6 @@
 ########################################
 # Bastion Host
+# Required: SSM Group, Route Table, Endpoint,...
 ########################################
 
 module "bastion" {
