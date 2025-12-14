@@ -7,10 +7,9 @@ resource "aws_security_group" "cluster" {
   description = "Security group for EKS cluster control plane"
   vpc_id      = var.vpc_id
 
-  tags = merge(
-    var.tags,
-    { Name = "${var.name}-eks-cluster-sg" }
-  )
+  tags = {
+    Name = "${var.name}-eks-cluster-sg"
+  }
 }
 
 # Allow inbound from nodes
@@ -44,13 +43,10 @@ resource "aws_security_group" "node" {
   description = "Security group for EKS worker nodes"
   vpc_id      = var.vpc_id
 
-  tags = merge(
-    var.tags,
-    {
-      Name                                          = "${var.name}-eks-node-sg"
-      "kubernetes.io/cluster/${var.name}-cluster"   = "owned"
-    }
-  )
+  tags = {
+    Name                                        = "${var.name}-eks-node-sg"
+    "kubernetes.io/cluster/${var.name}-cluster" = "owned"
+  }
 }
 
 # Node-to-node communication
