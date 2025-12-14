@@ -46,5 +46,6 @@ Khi các biến môi trường này tồn tại, Terraform sẽ sử dụng chú
 
 # Off resource
 Off EC2
+Off EKS
 Off network
 cd live\dev\ap-southeast-1\network
