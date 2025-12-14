@@ -39,7 +39,7 @@ output "node_role_name" {
 ########################################
 # EKS Cluster Outputs
 ########################################
-
+/*
 output "eks_enabled" {
   description = "Whether EKS cluster is enabled"
   value       = var.enable_eks
@@ -64,3 +64,4 @@ output "eks_oidc_issuer_url" {
   description = "OIDC issuer URL for IRSA"
   value       = var.enable_eks ? module.eks[0].oidc_issuer_url : null
 }
+*/

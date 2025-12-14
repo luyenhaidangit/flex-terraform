@@ -9,7 +9,7 @@
 # - Uses security groups from cluster_security_groups module
 #
 ########################################
-
+/*
 module "eks" {
   source = "../../modules/eks"
   count  = var.enable_eks ? 1 : 0
@@ -30,3 +30,4 @@ module "eks" {
   # Logging
   cluster_enabled_log_types = ["api", "audit", "authenticator"]
 }
+*/
