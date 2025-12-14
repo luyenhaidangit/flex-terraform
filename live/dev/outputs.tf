@@ -40,22 +40,27 @@ output "node_role_name" {
 # EKS Cluster Outputs
 ########################################
 
+output "eks_enabled" {
+  description = "Whether EKS cluster is enabled"
+  value       = var.enable_eks
+}
+
 output "eks_cluster_name" {
   description = "Name of the EKS cluster"
-  value       = module.eks.cluster_name
+  value       = var.enable_eks ? module.eks[0].cluster_name : null
 }
 
 output "eks_cluster_endpoint" {
   description = "Endpoint of the EKS cluster API server"
-  value       = module.eks.cluster_endpoint
+  value       = var.enable_eks ? module.eks[0].cluster_endpoint : null
 }
 
 output "eks_cluster_version" {
   description = "Kubernetes version of the cluster"
-  value       = module.eks.cluster_version
+  value       = var.enable_eks ? module.eks[0].cluster_version : null
 }
 
 output "eks_oidc_issuer_url" {
   description = "OIDC issuer URL for IRSA"
-  value       = module.eks.oidc_issuer_url
+  value       = var.enable_eks ? module.eks[0].oidc_issuer_url : null
 }
