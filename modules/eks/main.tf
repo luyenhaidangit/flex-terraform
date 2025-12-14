@@ -30,10 +30,21 @@ resource "aws_eks_cluster" "this" {
     }
   }
 
-  # Control plane logging
-  enabled_cluster_log_types = var.cluster_enabled_log_types
+  ########################################
+  # Control Plane Logging
+  ########################################
 
-  # Access config for EKS API authentication
+  enabled_cluster_log_types = [
+    "api",
+    "audit",
+    "authenticator",
+    "controllerManager",
+    "scheduler"
+  ]
+
+  ########################################
+  # Access & Authentication
+  ########################################
   access_config {
     authentication_mode                         = "API_AND_CONFIG_MAP"
     bootstrap_cluster_creator_admin_permissions = true
