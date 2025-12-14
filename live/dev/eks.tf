@@ -14,8 +14,8 @@ module "eks" {
   source = "../../modules/eks"
 
   name               = "dev-flex"
-  cluster_version    = "1.29"
-  private_subnet_ids = data.terraform_remote_state.network.outputs.private_subnet_ids
+  cluster_version    = "1.34"
+  private_subnet_ids = ["subnet-07f01181192caee00"]
 
   # From IAM module
   cluster_role_arn = module.eks_iam.cluster_role_arn
