@@ -1,10 +1,9 @@
-variable "name" {
-  description = "Prefix for Bastion resources"
-  type        = string
-}
+########################################
+# Required Variables
+########################################
 
-variable "vpc_id" {
-  description = "VPC ID where the Bastion will be provisioned"
+variable "name" {
+  description = "Name prefix for bastion resources"
   type        = string
 }
 
@@ -13,10 +12,24 @@ variable "subnet_id" {
   type        = string
 }
 
+variable "security_group_id" {
+  description = "Security group ID for the bastion host"
+  type        = string
+}
+
+variable "instance_profile_name" {
+  description = "IAM instance profile name for the bastion host"
+  type        = string
+}
+
+########################################
+# Optional Variables
+########################################
+
 variable "instance_type" {
   description = "EC2 instance type"
   type        = string
-  default     = "t3.micro"
+  default     = "t2.micro"
 }
 
 variable "ami_id" {
@@ -29,10 +42,4 @@ variable "volume_size" {
   description = "Root volume size in GB"
   type        = number
   default     = 8
-}
-
-variable "tags" {
-  description = "Common tags to apply to all resources"
-  type        = map(string)
-  default     = {}
 }

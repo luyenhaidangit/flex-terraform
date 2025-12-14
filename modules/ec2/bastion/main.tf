@@ -14,8 +14,8 @@ resource "aws_instance" "bastion" {
   ami                     = local.final_ami
   instance_type           = var.instance_type
   subnet_id               = var.subnet_id
-  vpc_security_group_ids  = [aws_security_group.bastion_sg.id]
-  iam_instance_profile    = aws_iam_instance_profile.bastion_profile.name
+  vpc_security_group_ids  = [var.security_group_id]
+  iam_instance_profile    = var.instance_profile_name
   disable_api_termination = true
   
   associate_public_ip_address = false  # BEST PRACTICE (private only)
@@ -30,7 +30,7 @@ resource "aws_instance" "bastion" {
     encrypted   = true
   }
 
-  tags = merge(var.tags, {
+  tags = {
     Name = "${var.name}-bastion"
-  })
+  }
 }
