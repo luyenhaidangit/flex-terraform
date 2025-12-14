@@ -12,7 +12,7 @@
 
 module "eks" {
   source = "../../modules/eks"
-  count  = var.enable_eks ? 1 : 0
+  count  = var.enable_eks ? 0 : 0
 
   name               = "dev-flex"
   cluster_version    = "1.34"
