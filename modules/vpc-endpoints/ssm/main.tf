@@ -14,7 +14,7 @@ locals {
 }
 
 resource "aws_vpc_endpoint" "ssm" {
-  for_each = var.enable_ssm_endpoints ? toset(local.ssm_endpoints) : []
+  for_each = var.enable_ssm_endpoints ? toset(local.ssm_endpoints) : toset([])
 
   vpc_id              = var.vpc_id
   vpc_endpoint_type   = "Interface"

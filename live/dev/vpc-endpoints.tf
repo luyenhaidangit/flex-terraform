@@ -12,9 +12,4 @@ module "ssm_vpc_endpoints" {
     module.private_subnet_1b.subnet_id
   ]
   security_group_id = module.ssm_vpce_security_group.ssm_vpce_security_group_id
-
-  tags = {
-    Environment = "dev"
-    ManagedBy   = "terraform"
-  }
 }

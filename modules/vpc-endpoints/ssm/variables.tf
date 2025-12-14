@@ -26,8 +26,8 @@ variable "security_group_id" {
 # Optional Variables
 ########################################
 
-variable "tags" {
-  description = "Additional tags to apply to resources"
-  type        = map(string)
-  default     = {}
+variable "enable_ssm_endpoints" {
+  description = "Enable SSM VPC endpoints"
+  type        = bool
+  default     = true
 }
