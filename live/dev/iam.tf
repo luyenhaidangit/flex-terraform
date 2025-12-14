@@ -18,3 +18,18 @@ module "eks_iam" {
   # enable_ebs_csi_irsa = true
   # enable_vpc_cni_irsa = true
 }
+
+########################################
+# Bastion IAM Role
+########################################
+#
+# This module creates IAM role for the bastion host:
+# - Bastion Role: Allows EC2 instance to use SSM Session Manager
+# - Instance Profile: Attached to the bastion EC2 instance
+########################################
+
+module "bastion_iam" {
+  source = "../../modules/iam/bastion"
+
+  name = "dev-flex"
+}
