@@ -77,3 +77,54 @@ resource "aws_security_group" "bastion_sg" {
 }
 ```
 
+## Tags Convention
+
+### Rules
+
+1. **Do NOT use `merge()` with `var.tags`** - Use simple tags with only `Name` tag
+2. **Do NOT define `tags` variable** in modules - Tags are managed via default tags in provider configuration
+3. **Always use simple tag structure** with only `Name` tag
+
+### Correct Usage
+
+```hcl
+# ✅ CORRECT - Simple tags with Name only
+resource "aws_iam_role" "example" {
+  name = "${var.name}-example-role"
+  
+  tags = {
+    Name = "${var.name}-example-role"
+  }
+}
+
+# ✅ CORRECT - No tags variable needed
+variable "name" {
+  description = "Name prefix"
+  type        = string
+}
+```
+
+### Incorrect Usage
+
+```hcl
+# ❌ WRONG - Do not use merge with var.tags
+resource "aws_iam_role" "example" {
+  tags = merge(
+    var.tags,
+    { Name = "${var.name}-example-role" }
+  )
+}
+
+# ❌ WRONG - Do not define tags variable
+variable "tags" {
+  type = map(string)
+  default = {}
+}
+```
+
+### Rationale
+
+- Tags are managed centrally via AWS provider default tags configuration
+- Simplifies module code and reduces unnecessary variables
+- Consistent with existing IAM modules (`bastion`, `cluster`, `gha_codecommit`)
+

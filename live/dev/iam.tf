@@ -33,3 +33,34 @@ module "bastion_iam" {
 
   name = "dev-flex"
 }
+
+########################################
+# GitHub Actions CodeCommit IAM Role
+########################################
+#
+# This module creates IAM role for GitHub Actions to access CodeCommit:
+# - Role: Allows GitHub Actions workflows to assume role via OIDC
+# - Policy: Grants CodeCommit access (read-only or read-write)
+#
+# Usage example:
+#   - github_repositories: ["owner/repo:*"] or ["owner/repo:ref:refs/heads/main"]
+#   - codecommit_repositories: ["arn:aws:codecommit:region:account:repo-name"]
+########################################
+
+# module "github_actions_codecommit" {
+#   source = "../../modules/iam/gha_codecommit"
+#
+#   name               = "dev-flex"
+#   oidc_provider_arn = module.github_oidc.oidc_provider_arn
+#   oidc_provider_url = module.github_oidc.oidc_provider_url_without_protocol
+#
+#   github_repositories = [
+#     "owner/repo:*"  # Allow all branches/tags, or use "owner/repo:ref:refs/heads/main" for specific branch
+#   ]
+#
+#   codecommit_repositories = [
+#     "arn:aws:codecommit:ap-southeast-1:ACCOUNT_ID:repo-name"
+#   ]
+#
+#   permissions = "read-write"  # or "read-only"
+# }
