@@ -20,14 +20,24 @@ module "public_route_table_1a" {
 }
 
 ########################################
-# Public Route Table for Subnet 1b
+# Private Route Tables
+########################################
+#
+# This module creates route tables for private subnets with routes to NAT Gateway.
+# Private subnets use NAT Gateway for outbound internet access.
 ########################################
 
-module "public_route_table_1b" {
-  source = "../../modules/route-tables/public"
+########################################
+# Private Route Table for Subnet 1a
+########################################
 
-  name                = "dev-flex"
-  vpc_id              = module.vpc.vpc_id
-  internet_gateway_id = module.internet_gateway.internet_gateway_id
-  subnet_id           = module.public_subnet_1b.subnet_id
+module "private_route_table_1a" {
+  count = var.enable_nat_gateway ? 1 : 0
+
+  source = "../../modules/route-tables/private"
+
+  name           = "dev-flex"
+  vpc_id         = module.vpc.vpc_id
+  nat_gateway_id = module.nat_gateway[0].nat_gateway_id
+  subnet_id      = module.private_subnet_1a.subnet_id
 }
