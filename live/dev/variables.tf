@@ -3,3 +3,9 @@ variable "enable_eks" {
   type        = bool
   default     = true
 }
+
+variable "enable_nat_gateway" {
+  description = "Enable NAT Gateway. Set false to destroy and save costs."
+  type        = bool
+  default     = true
+}
