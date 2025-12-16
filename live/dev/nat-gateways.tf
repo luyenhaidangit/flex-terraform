@@ -15,4 +15,6 @@ module "nat_gateway" {
   name              = "dev-flex"
   eip_allocation_id = module.eip[0].allocation_id
   subnet_id         = module.public_subnet_1a.subnet_id
+
+  depends_on = [module.internet_gateway]
 }
