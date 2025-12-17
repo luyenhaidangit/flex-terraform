@@ -30,6 +30,8 @@ resource "aws_instance" "bastion" {
     encrypted   = true
   }
 
+  user_data = base64encode(file("${path.module}/user_data/init.sh"))
+
   tags = {
     Name = "${var.name}-bastion"
   }
