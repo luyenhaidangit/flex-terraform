@@ -12,6 +12,6 @@ module "bastion" {
   instance_profile_name = module.bastion_iam.bastion_instance_profile_name
 
   # Optional
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
   volume_size   = 8
 }
